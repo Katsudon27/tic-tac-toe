@@ -1,7 +1,8 @@
 class Player
-  attr_reader :symbol
+  attr_reader :symbol, :name
 
-  def initialize(symbol)
+  def initialize(name, symbol)
+    @name = name
     @symbol = symbol
   end
 end
@@ -47,6 +48,24 @@ class GameBoard
     @board.each do |row|
       puts row.map { |cell| cell.value }.join(" ")
     end
+  end
+end
+
+class GameController
+  def initialize()
+    @game_board = GameBoard.new()
+    @player1 = player.new("Player 1", "O")
+    @player2 = player.new("Player 2", "X")
+    @currentPlayer = @player1
+  end
+
+  def switchPlayerTurn()
+    @currentPlayer = @currentPlayer == @player1 ? @player2 : @player1
+  end
+
+  def printNewRound
+    @game_board.printBoard()
+    puts "#{@currentPlayer.name}'s turn: Please choose a valid cell (0 - 9) to place your piece"
   end
 end
 
