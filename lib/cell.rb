@@ -1,3 +1,5 @@
+require_relative "player"
+
 class Cell
   @@number_of_cells = 0
 
@@ -9,7 +11,7 @@ class Cell
     @is_occupied = false
   end
 
-  def addPiece(player)
+  def add_piece(player)
     @is_occupied = player.symbol
   end
 end

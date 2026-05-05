@@ -10,16 +10,16 @@ class GameBoard
     end
   end
 
-  def placePiece(num, player)
+  def place_piece(num, player)
     @board = @board.map do |row|
       row.map do |cell|
-        cell.addPiece(player) if cell.value == num
+        cell.add_piece(player) if cell.value == num
         cell
       end
     end
   end
 
-  def printBoard
+  def print_board
     puts "------"
     puts "Current TIC-TAC-TOE game board"
     @board.each do |row|
@@ -28,19 +28,19 @@ class GameBoard
     puts "------"
   end
 
-  def returnEmptyCells
+  def return_empty_cells
     @board.map do |row|
       row.filter do |cell|
         cell.is_occupied == false ? cell.value : next
-      end.map { |cell| cell.value }
+      end.map(&:value)
     end.flatten
   end
 
-  def returnPlayerCells(player)
+  def return_player_cells(player)
     @board.map do |row|
       row.filter do |cell|
         cell.is_occupied == player.symbol ? cell.value : next
-      end.map { |cell| cell.value }
+      end.map(&:value)
     end.flatten
   end
 end

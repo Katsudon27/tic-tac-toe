@@ -6,18 +6,18 @@ class GameController
     @game_board = GameBoard.new
     @player1 = Player.new("Player 1", "O")
     @player2 = Player.new("Player 2", "X")
-    @currentPlayer = @player1
+    @current_player = @player1
   end
 
-  def switchPlayerTurn
-    @currentPlayer = @currentPlayer == @player1 ? @player2 : @player1
+  def switch_turn
+    @current_player = @current_player == @player1 ? @player2 : @player1
   end
 
-  def checkMoveValidity(cell_num)
-    @game_board.returnEmptyCells.include?(cell_num) || false
+  def check_move_validity?(cell_num)
+    @game_board.return_empty_cells.include?(cell_num) || false
   end
 
-  def checkCondition(orientation, player_moves)
+  def check_condition?(orientation, player_moves)
     case orientation
     when "row"
       winning_conditions = [%w[1 2 3], %w[4 5 6], %w[7 8 9]]
@@ -30,32 +30,35 @@ class GameController
     winning_conditions.each do |condition|
       return true if (condition - player_moves).empty?
     end
+
+    false
   end
 
-  def checkWin(_player)
-    player_moves = @game_board.returnPlayerCells(@currentPlayer)
+  def check_win?
+    player_moves = @game_board.return_player_cells(@current_player)
+    puts "#{@current_player.name}'s moves: #{player_moves}"
 
-    if (player_moves.length >= 3) && (checkCondition("row", player_moves) ||
-      checkCondition("column", player_moves) ||
-      checkCondition("diagonal", player_moves))
+    if (player_moves.length >= 3) && (check_condition?("row", player_moves) ||
+      check_condition?("column", player_moves) ||
+      check_condition?("diagonal", player_moves))
       return true
     end
 
     false
   end
 
-  def playRound
-    puts "#{@currentPlayer.name}'s turn: Please choose a valid cell (0 - 9) to place your piece"
+  def play_round
+    puts "#{@current_player.name}'s turn: Please choose a valid cell (0 - 9) to place your piece"
 
     while true
       player_input = gets.chomp
-      break if ("1".."9").to_a.include?(player_input) && checkMoveValidity(player_input)
+      break if ("1".."9").to_a.include?(player_input) && check_move_validity?(player_input)
 
       puts "Invalid input: Please choose an unoccupied cell to place your piece"
 
     end
 
-    @game_board.placePiece(player_input, @currentPlayer)
+    @game_board.place_piece(player_input, @current_player)
   end
 
   def start_game
@@ -69,22 +72,22 @@ class GameController
     puts "######"
     puts "START GAME"
 
-    while true
-      @game_board.printBoard
+    loop do
+      @game_board.print_board
 
-      playRound
+      play_round
 
-      if checkWin(@currentPlayer)
-        @game_board.printBoard
-        puts "Congratulations! #{@currentPlayer.name} has won the game!"
+      if check_win?
+        @game_board.print_board
+        puts "Congratulations! #{@current_player.name} has won the game!"
         break
-      elsif @game_board.returnEmptyCells.length === 0
-        @game_board.printBoard
+      elsif @game_board.return_empty_cells.empty?
+        @game_board.print_board
         puts "Oh... it seems like we have a draw!"
         break
       end
 
-      switchPlayerTurn
+      switch_turn
     end
 
     puts "GAME OVER"
