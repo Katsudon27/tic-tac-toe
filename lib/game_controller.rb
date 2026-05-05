@@ -1,72 +1,5 @@
-class Player
-  attr_reader :symbol, :name
-
-  def initialize(name, symbol)
-    @name = name
-    @symbol = symbol
-  end
-end
-
-class Cell
-  @@number_of_cells = 0
-
-  attr_reader :value, :is_occupied
-
-  def initialize
-    @@number_of_cells += 1
-    @value = @@number_of_cells.to_s
-    @is_occupied = false
-  end
-
-  def addPiece(player)
-    @is_occupied = player.symbol
-  end
-end
-
-class GameBoard
-  def initialize
-    @board = Array.new(3) { Array.new(3) }
-    @board = @board.map do |row|
-      row.map do |_item|
-        Cell.new
-      end
-    end
-  end
-
-  def placePiece(num, player)
-    @board = @board.map do |row|
-      row.map do |cell|
-        cell.addPiece(player) if cell.value == num
-        cell
-      end
-    end
-  end
-
-  def printBoard
-    puts "------"
-    puts "Current TIC-TAC-TOE game board"
-    @board.each do |row|
-      puts row.map { |cell| cell.is_occupied === false ? cell.value : cell.is_occupied }.join("  ")
-    end
-    puts "------"
-  end
-
-  def returnEmptyCells
-    @board.map do |row|
-      row.filter do |cell|
-        cell.is_occupied == false ? cell.value : next
-      end.map { |cell| cell.value }
-    end.flatten
-  end
-
-  def returnPlayerCells(player)
-    @board.map do |row|
-      row.filter do |cell|
-        cell.is_occupied == player.symbol ? cell.value : next
-      end.map { |cell| cell.value }
-    end.flatten
-  end
-end
+require_relative "game_board"
+require_relative "player"
 
 class GameController
   def initialize
@@ -102,11 +35,9 @@ class GameController
   def checkWin(_player)
     player_moves = @game_board.returnPlayerCells(@currentPlayer)
 
-    if (player_moves.length >= 3) && (checkCondition("row",
-                                                     player_moves) || checkCondition("column",
-                                                                                     player_moves) || checkCondition(
-                                                                                       "diagonal", player_moves
-                                                                                     ))
+    if (player_moves.length >= 3) && (checkCondition("row", player_moves) ||
+      checkCondition("column", player_moves) ||
+      checkCondition("diagonal", player_moves))
       return true
     end
 
@@ -159,6 +90,3 @@ class GameController
     puts "GAME OVER"
   end
 end
-
-game = GameController.new
-game.start_game
