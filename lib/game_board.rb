@@ -3,9 +3,10 @@ require_relative "cell"
 class GameBoard
   def initialize
     @board = Array.new(3) { Array.new(3) }
+    index = 0
     @board = @board.map do |row|
-      row.map do |_item|
-        Cell.new
+      row.each_with_index.map do |_item|
+        Cell.new(index += 1)
       end
     end
   end
