@@ -25,7 +25,6 @@ end
 
 class GameBoard
   def initialize()
-    
     @board = Array.new(3) {Array.new(3)}
     @board = @board.map do |row|
       row.map do |item|
@@ -46,15 +45,18 @@ class GameBoard
   end
 
   def printBoard
+    puts "------"
+    puts "Current TIC-TAC-TOE game board"
     @board.each do |row|
-      puts row.map { |cell| cell.is_occupied === false ? cell.value : cell.is_occupied }.join(" ")
+      puts row.map { |cell| cell.is_occupied === false ? cell.value : cell.is_occupied }.join("  ")
     end
+    puts "------"
   end
 
   def returnEmptyCells
     @board.map do |row|
       row.filter do |cell|
-        cell.is_occupied === false ? cell.value : next
+        cell.is_occupied == false ? cell.value : next
       end.map {|cell| cell.value}
     end.flatten
   end
@@ -62,7 +64,7 @@ class GameBoard
   def returnPlayerCells(player)
     @board.map do |row|
       row.filter do |cell|
-        cell.is_occupied === player.symbol ? cell.value : next
+        cell.is_occupied == player.symbol ? cell.value : next
       end.map {|cell| cell.value}
     end.flatten
   end
@@ -84,30 +86,29 @@ class GameController
     @game_board.returnEmptyCells().include?(cell_num) ? true : false
   end
 
+  def checkCondition(orientation, player_moves)
+    case orientation
+    when "row"
+      winning_conditions = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]]
+    when "column"
+      winning_conditions = [["1", "4", "7"], ["2", "5", "8"], ["3", "6", "9"]]
+    when "diagonal"
+      winning_conditions = [["1", "5", "9"], ["3", "5", "7"]]
+    end
+
+    winning_conditions.each do |condition|
+      if (condition - player_moves).empty?
+        return true
+      end
+    end
+  end
+
   def checkWin(player)
     player_moves = @game_board.returnPlayerCells(@currentPlayer)
-    
+
     if player_moves.length >= 3
-      winning_conditions_row = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]]
-      winning_conditions_column = [["1", "4", "7"], ["2", "5", "8"], ["3", "6", "9"]]
-      winning_conditions_diagonal = [["1", "5", "9"], ["3", "5", "7"]]
-
-      winning_conditions_row.each do |condition|
-        if (condition - player_moves).empty?
-          return true
-        end
-      end
-
-      winning_conditions_column.each do |condition|
-        if (condition - player_moves).empty?
-          return true
-        end
-      end
-
-      winning_conditions_diagonal.each do |condition|
-        if (condition - player_moves).empty?
-          return true
-        end
+      if checkCondition("row", player_moves) || checkCondition("column", player_moves) || checkCondition("diagonal", player_moves)
+        return true
       end
     end
 
@@ -122,7 +123,7 @@ class GameController
       if ("1".."9").to_a.include?(player_input) && checkMoveValidity(player_input)
         break
       else
-        puts "Invalid input: Please choose a valid cell (0 - 9) to place your piece"
+        puts "Invalid input: Please choose an unoccupied cell to place your piece"
       end
     end
     
@@ -141,9 +142,7 @@ class GameController
     puts "START GAME"
 
     while true
-      puts "Current TIC-TAC-TOE game board"
       @game_board.printBoard()
-      puts "------"
 
       playRound()
 
