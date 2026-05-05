@@ -19,8 +19,7 @@ class Cell
   end
 
   def addPiece(player)
-    @value = player.symbol
-    @is_occupied = true
+    @is_occupied = player.symbol
   end
 end
 
@@ -48,7 +47,7 @@ class GameBoard
 
   def printBoard
     @board.each do |row|
-      puts row.map { |cell| cell.value }.join(" ")
+      puts row.map { |cell| cell.is_occupied === false ? cell.value : cell.is_occupied }.join(" ")
     end
   end
 
@@ -63,7 +62,7 @@ class GameBoard
   def returnPlayerCells(player)
     @board.map do |row|
       row.filter do |cell|
-        cell.value === player.symbol
+        cell.is_occupied === player.symbol ? cell.value : next
       end.map {|cell| cell.value}
     end.flatten
   end
@@ -72,8 +71,8 @@ end
 class GameController
   def initialize()
     @game_board = GameBoard.new()
-    @player1 = player.new("Player 1", "O")
-    @player2 = player.new("Player 2", "X")
+    @player1 = Player.new("Player 1", "O")
+    @player2 = Player.new("Player 2", "X")
     @currentPlayer = @player1
   end
 
@@ -81,39 +80,89 @@ class GameController
     @currentPlayer = @currentPlayer == @player1 ? @player2 : @player1
   end
 
-  def printNewRound
-    @game_board.printBoard()
-    puts "#{@currentPlayer.name}'s turn: Please choose a valid cell (0 - 9) to place your piece"
-  end
-
   def checkMoveValidity(cell_num)
     @game_board.returnEmptyCells().include?(cell_num) ? true : false
   end
 
   def checkWin(player)
-    player_moves = @board.returnPlayerCells()
-    winning_conditions_row = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]]
-    winning_conditions_column = [["1", "4", "7"], ["2", "5", "8"], ["3", "6", "9"]]
-    winning_conditions_diagonal = [["1", "5", "9"], ["3", "5", "7"]]
+    player_moves = @game_board.returnPlayerCells(@currentPlayer)
+    
+    if player_moves.length >= 3
+      winning_conditions_row = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]]
+      winning_conditions_column = [["1", "4", "7"], ["2", "5", "8"], ["3", "6", "9"]]
+      winning_conditions_diagonal = [["1", "5", "9"], ["3", "5", "7"]]
 
-    winning_conditions_row.each do |condition|
-      if (condition - player_moves).empty?
-        return true
+      winning_conditions_row.each do |condition|
+        if (condition - player_moves).empty?
+          return true
+        end
       end
-    end
 
-    winning_conditions_column.each do |condition|
-      if (condition - player_moves).empty?
-        return true
+      winning_conditions_column.each do |condition|
+        if (condition - player_moves).empty?
+          return true
+        end
       end
-    end
 
-    winning_conditions_diagonal.each do |condition|
-      if (condition - player_moves).empty?
-        return true
+      winning_conditions_diagonal.each do |condition|
+        if (condition - player_moves).empty?
+          return true
+        end
       end
     end
 
     return false
   end
+
+  def playRound
+    puts "#{@currentPlayer.name}'s turn: Please choose a valid cell (0 - 9) to place your piece"
+
+    while true
+      player_input = gets.chomp
+      if ("1".."9").to_a.include?(player_input) && checkMoveValidity(player_input)
+        break
+      else
+        puts "Invalid input: Please choose a valid cell (0 - 9) to place your piece"
+      end
+    end
+    
+    @game_board.placePiece(player_input, @currentPlayer)
+  end
+
+  def start_game
+    puts "Console-based TIC-TAC-TOE game"
+    puts "######"
+    puts "Prior to playing the game, please decide among yourselves to be Player 1 or Player 2"
+    puts "- Player 1 will be represented by the mark 'O'"
+    puts "- Player 2 will be represented by the mark 'X'"
+    puts "######"
+    puts "The goal for both players is to mark all three cells of a row, columns, or diagonal of the grid."
+    puts "######"
+    puts "START GAME"
+
+    while true
+      puts "Current TIC-TAC-TOE game board"
+      @game_board.printBoard()
+      puts "------"
+
+      playRound()
+
+      if checkWin(@currentPlayer)
+        @game_board.printBoard()
+        puts "Congratulations! #{@currentPlayer.name} has won the game!"
+        break
+      elsif @game_board.returnEmptyCells().length === 0
+        @game_board.printBoard()
+        puts "Oh... it seems like we have a draw!"
+        break
+      end
+
+      switchPlayerTurn()
+    end
+
+    puts "GAME OVER"
+  end
 end
+
+game = GameController.new()
+game.start_game()
