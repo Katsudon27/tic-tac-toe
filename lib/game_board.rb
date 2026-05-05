@@ -23,7 +23,7 @@ class GameBoard
     puts "------"
     puts "Current TIC-TAC-TOE game board"
     @board.each do |row|
-      puts row.map { |cell| cell.is_occupied === false ? cell.value : cell.is_occupied }.join("  ")
+      puts row.map { |cell| cell.is_occupied == false ? cell.value : cell.is_occupied }.join("  ")
     end
     puts "------"
   end

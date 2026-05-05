@@ -61,7 +61,7 @@ class GameController
     @game_board.place_piece(player_input, @current_player)
   end
 
-  def start_game
+  def print_instructions
     puts "Console-based TIC-TAC-TOE game"
     puts "######"
     puts "Prior to playing the game, please decide among yourselves to be Player 1 or Player 2"
@@ -71,6 +71,10 @@ class GameController
     puts "The goal for both players is to mark all three cells of a row, columns, or diagonal of the grid."
     puts "######"
     puts "START GAME"
+  end
+
+  def start_game
+    print_instructions
 
     loop do
       @game_board.print_board
