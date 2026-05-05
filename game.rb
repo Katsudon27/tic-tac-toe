@@ -12,7 +12,7 @@ class Cell
 
   attr_reader :value, :is_occupied
 
-  def initialize()
+  def initialize
     @@number_of_cells += 1
     @value = @@number_of_cells.to_s
     @is_occupied = false
@@ -24,11 +24,11 @@ class Cell
 end
 
 class GameBoard
-  def initialize()
-    @board = Array.new(3) {Array.new(3)}
+  def initialize
+    @board = Array.new(3) { Array.new(3) }
     @board = @board.map do |row|
-      row.map do |item|
-        item = Cell.new()
+      row.map do |_item|
+        Cell.new
       end
     end
   end
@@ -36,9 +36,7 @@ class GameBoard
   def placePiece(num, player)
     @board = @board.map do |row|
       row.map do |cell|
-        if cell.value == num
-          cell.addPiece(player)
-        end
+        cell.addPiece(player) if cell.value == num
         cell
       end
     end
@@ -57,7 +55,7 @@ class GameBoard
     @board.map do |row|
       row.filter do |cell|
         cell.is_occupied == false ? cell.value : next
-      end.map {|cell| cell.value}
+      end.map { |cell| cell.value }
     end.flatten
   end
 
@@ -65,54 +63,54 @@ class GameBoard
     @board.map do |row|
       row.filter do |cell|
         cell.is_occupied == player.symbol ? cell.value : next
-      end.map {|cell| cell.value}
+      end.map { |cell| cell.value }
     end.flatten
   end
 end
 
 class GameController
-  def initialize()
-    @game_board = GameBoard.new()
+  def initialize
+    @game_board = GameBoard.new
     @player1 = Player.new("Player 1", "O")
     @player2 = Player.new("Player 2", "X")
     @currentPlayer = @player1
   end
 
-  def switchPlayerTurn()
+  def switchPlayerTurn
     @currentPlayer = @currentPlayer == @player1 ? @player2 : @player1
   end
 
   def checkMoveValidity(cell_num)
-    @game_board.returnEmptyCells().include?(cell_num) ? true : false
+    @game_board.returnEmptyCells.include?(cell_num) || false
   end
 
   def checkCondition(orientation, player_moves)
     case orientation
     when "row"
-      winning_conditions = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]]
+      winning_conditions = [%w[1 2 3], %w[4 5 6], %w[7 8 9]]
     when "column"
-      winning_conditions = [["1", "4", "7"], ["2", "5", "8"], ["3", "6", "9"]]
+      winning_conditions = [%w[1 4 7], %w[2 5 8], %w[3 6 9]]
     when "diagonal"
-      winning_conditions = [["1", "5", "9"], ["3", "5", "7"]]
+      winning_conditions = [%w[1 5 9], %w[3 5 7]]
     end
 
     winning_conditions.each do |condition|
-      if (condition - player_moves).empty?
-        return true
-      end
+      return true if (condition - player_moves).empty?
     end
   end
 
-  def checkWin(player)
+  def checkWin(_player)
     player_moves = @game_board.returnPlayerCells(@currentPlayer)
 
-    if player_moves.length >= 3
-      if checkCondition("row", player_moves) || checkCondition("column", player_moves) || checkCondition("diagonal", player_moves)
-        return true
-      end
+    if (player_moves.length >= 3) && (checkCondition("row",
+                                                     player_moves) || checkCondition("column",
+                                                                                     player_moves) || checkCondition(
+                                                                                       "diagonal", player_moves
+                                                                                     ))
+      return true
     end
 
-    return false
+    false
   end
 
   def playRound
@@ -120,13 +118,12 @@ class GameController
 
     while true
       player_input = gets.chomp
-      if ("1".."9").to_a.include?(player_input) && checkMoveValidity(player_input)
-        break
-      else
-        puts "Invalid input: Please choose an unoccupied cell to place your piece"
-      end
+      break if ("1".."9").to_a.include?(player_input) && checkMoveValidity(player_input)
+
+      puts "Invalid input: Please choose an unoccupied cell to place your piece"
+
     end
-    
+
     @game_board.placePiece(player_input, @currentPlayer)
   end
 
@@ -142,26 +139,26 @@ class GameController
     puts "START GAME"
 
     while true
-      @game_board.printBoard()
+      @game_board.printBoard
 
-      playRound()
+      playRound
 
       if checkWin(@currentPlayer)
-        @game_board.printBoard()
+        @game_board.printBoard
         puts "Congratulations! #{@currentPlayer.name} has won the game!"
         break
-      elsif @game_board.returnEmptyCells().length === 0
-        @game_board.printBoard()
+      elsif @game_board.returnEmptyCells.length === 0
+        @game_board.printBoard
         puts "Oh... it seems like we have a draw!"
         break
       end
 
-      switchPlayerTurn()
+      switchPlayerTurn
     end
 
     puts "GAME OVER"
   end
 end
 
-game = GameController.new()
-game.start_game()
+game = GameController.new
+game.start_game
