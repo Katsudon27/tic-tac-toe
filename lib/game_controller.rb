@@ -36,7 +36,6 @@ class GameController
 
   def check_win?
     player_moves = @game_board.return_player_cells(@current_player)
-    puts "#{@current_player.name}'s moves: #{player_moves}"
 
     if (player_moves.length >= 3) && (check_condition?("row", player_moves) ||
       check_condition?("column", player_moves) ||
