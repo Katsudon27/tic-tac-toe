@@ -9,6 +9,32 @@ class GameController
     @current_player = @player1
   end
 
+  def start_game
+    print_instructions
+
+    loop do
+      @game_board.print_board
+
+      play_round
+
+      if check_win?
+        @game_board.print_board
+        puts "Congratulations! #{@current_player.name} has won the game!"
+        break
+      elsif @game_board.return_empty_cells.empty?
+        @game_board.print_board
+        puts "Oh... it seems like we have a draw!"
+        break
+      end
+
+      switch_turn
+    end
+
+    puts "GAME OVER"
+  end
+
+  private
+
   def switch_turn
     @current_player = @current_player == @player1 ? @player2 : @player1
   end
@@ -47,14 +73,11 @@ class GameController
   end
 
   def play_round
-    puts "#{@current_player.name}'s turn: Please choose a valid cell (0 - 9) to place your piece"
-
     while true
-      player_input = gets.chomp
+      player_input = @current_player.make_move
       break if ("1".."9").to_a.include?(player_input) && check_move_validity?(player_input)
 
       puts "Invalid input: Please choose an unoccupied cell to place your piece"
-
     end
 
     @game_board.place_piece(player_input, @current_player)
@@ -70,29 +93,5 @@ class GameController
     puts "The goal for both players is to mark all three cells of a row, columns, or diagonal of the grid."
     puts "######"
     puts "START GAME"
-  end
-
-  def start_game
-    print_instructions
-
-    loop do
-      @game_board.print_board
-
-      play_round
-
-      if check_win?
-        @game_board.print_board
-        puts "Congratulations! #{@current_player.name} has won the game!"
-        break
-      elsif @game_board.return_empty_cells.empty?
-        @game_board.print_board
-        puts "Oh... it seems like we have a draw!"
-        break
-      end
-
-      switch_turn
-    end
-
-    puts "GAME OVER"
   end
 end
