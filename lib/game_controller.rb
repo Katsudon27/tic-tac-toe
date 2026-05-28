@@ -1,6 +1,7 @@
 require_relative "game_board"
 require_relative "player"
 
+# Controls the flow of the Tic Tac Toe game
 class GameController
   def initialize
     @game_board = GameBoard.new
@@ -9,13 +10,12 @@ class GameController
     @current_player = @player1
   end
 
-  def start_game
+  def play_game
     print_instructions
 
     loop do
-      @game_board.print_board
-
-      play_round
+      player_move = play_round
+      place_piece(player_move)
 
       if check_win? || @game_board.return_empty_cells.empty?
         game_over
@@ -66,14 +66,17 @@ class GameController
   end
 
   def play_round
-    while true
+    @game_board.print_board
+    return_player_input
+  end
+
+  def return_player_input
+    loop do
       player_input = @current_player.make_move
-      break if ("1".."9").to_a.include?(player_input) && check_move_validity?(player_input)
+      return player_input if ("1".."9").to_a.include?(player_input) && check_move_validity?(player_input)
 
       puts "Invalid input: Please choose an unoccupied cell to place your piece"
     end
-
-    @game_board.place_piece(player_input, @current_player)
   end
 
   def print_instructions
@@ -97,5 +100,9 @@ class GameController
     end
 
     puts "GAME OVER"
+  end
+
+  def place_piece(player_move)
+    @game_board.place_piece(player_move, @current_player)
   end
 end
