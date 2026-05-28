@@ -17,20 +17,13 @@ class GameController
 
       play_round
 
-      if check_win?
-        @game_board.print_board
-        puts "Congratulations! #{@current_player.name} has won the game!"
-        break
-      elsif @game_board.return_empty_cells.empty?
-        @game_board.print_board
-        puts "Oh... it seems like we have a draw!"
+      if check_win? || @game_board.return_empty_cells.empty?
+        game_over
         break
       end
 
       switch_turn
     end
-
-    puts "GAME OVER"
   end
 
   private
@@ -93,5 +86,16 @@ class GameController
     puts "The goal for both players is to mark all three cells of a row, columns, or diagonal of the grid."
     puts "######"
     puts "START GAME"
+  end
+
+  def game_over
+    @game_board.print_board
+    if check_win?
+      puts "Congratulations! #{@current_player.name} has won the game!"
+    elsif @game_board.return_empty_cells.empty?
+      puts "Oh... it seems like we have a draw!"
+    end
+
+    puts "GAME OVER"
   end
 end
