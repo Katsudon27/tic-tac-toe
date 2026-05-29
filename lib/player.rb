@@ -7,8 +7,7 @@ class Player
   end
 
   def make_move
-    puts "#{@name}'s turn: Please choose a valid cell (0 - 9) to place your piece"
-
+    puts "#{@name}'s turn: Please choose a valid cell (1 - 9) to place your piece"
     gets.chomp
   end
 end
