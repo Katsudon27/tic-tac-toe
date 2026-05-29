@@ -3,38 +3,42 @@ require_relative "player"
 
 # Controls the flow of the Tic Tac Toe game
 class GameController
-  def initialize
-    @game_board = GameBoard.new
-    @player1 = Player.new("Player 1", "O")
-    @player2 = Player.new("Player 2", "X")
+  def initialize(player1, player2, game_board)
+    @player1 = player1
+    @player2 = player2
+    @game_board = game_board
     @current_player = @player1
   end
-
-  def play_game
-    print_instructions
-
-    loop do
-      player_move = play_round
-      place_piece(player_move)
-
-      if check_win? || @game_board.return_empty_cells.empty?
-        game_over
-        break
-      end
-
-      switch_turn
-    end
-  end
-
-  private
 
   def switch_turn
     @current_player = @current_player == @player1 ? @player2 : @player1
   end
 
-  def check_move_validity?(cell_num)
-    @game_board.return_empty_cells.include?(cell_num) || false
+  def player_win?
+    player_moves = @game_board.return_player_cells(@current_player)
+
+    if (player_moves.length >= 3) && (check_condition?("row", player_moves) ||
+      check_condition?("column", player_moves) ||
+      check_condition?("diagonal", player_moves))
+      return true
+    end
+
+    false
   end
+
+  def draw_game?
+    @game_board.return_empty_cells.empty?
+  end
+
+  def return_player_input
+    @current_player.make_move
+  end
+
+  def place_piece(player_move)
+    @game_board.place_piece(player_move, @current_player)
+  end
+
+  private
 
   def check_condition?(orientation, player_moves)
     case orientation
@@ -51,58 +55,5 @@ class GameController
     end
 
     false
-  end
-
-  def check_win?
-    player_moves = @game_board.return_player_cells(@current_player)
-
-    if (player_moves.length >= 3) && (check_condition?("row", player_moves) ||
-      check_condition?("column", player_moves) ||
-      check_condition?("diagonal", player_moves))
-      return true
-    end
-
-    false
-  end
-
-  def play_round
-    @game_board.print_board
-    return_player_input
-  end
-
-  def return_player_input
-    loop do
-      player_input = @current_player.make_move
-      return player_input if ("1".."9").to_a.include?(player_input) && check_move_validity?(player_input)
-
-      puts "Invalid input: Please choose an unoccupied cell to place your piece"
-    end
-  end
-
-  def print_instructions
-    puts "Console-based TIC-TAC-TOE game"
-    puts "######"
-    puts "Prior to playing the game, please decide among yourselves to be Player 1 or Player 2"
-    puts "- Player 1 will be represented by the mark 'O'"
-    puts "- Player 2 will be represented by the mark 'X'"
-    puts "######"
-    puts "The goal for both players is to mark all three cells of a row, columns, or diagonal of the grid."
-    puts "######"
-    puts "START GAME"
-  end
-
-  def game_over
-    @game_board.print_board
-    if check_win?
-      puts "Congratulations! #{@current_player.name} has won the game!"
-    elsif @game_board.return_empty_cells.empty?
-      puts "Oh... it seems like we have a draw!"
-    end
-
-    puts "GAME OVER"
-  end
-
-  def place_piece(player_move)
-    @game_board.place_piece(player_move, @current_player)
   end
 end
