@@ -52,4 +52,26 @@ describe GameController do
       expect(game_controller.current_player).to eq(player2)
     end
   end
+
+  describe "#draw_game?" do
+    context "when there are still empty cells left" do
+      before do
+        allow(game_board).to receive(:return_empty_cells).and_return(["2"])
+      end
+
+      it "is not a draw game" do
+        expect(game_controller).not_to be_draw_game
+      end
+    end
+
+    context "when there are no empty cells left" do
+      before do
+        allow(game_board).to receive(:return_empty_cells).and_return([])
+      end
+
+      it "is a draw game" do
+        expect(game_controller).to be_draw_game
+      end
+    end
+  end
 end
