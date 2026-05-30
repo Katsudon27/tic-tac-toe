@@ -14,7 +14,7 @@ describe GameController do
         allow(game_controller).to receive(:current_player_cells).and_return(%w[1 2 3])
       end
       it "should return true" do
-        expect(game_controller.player_win?).to be true
+        expect(game_controller).to be_player_win
       end
     end
 
@@ -23,7 +23,7 @@ describe GameController do
         allow(game_controller).to receive(:current_player_cells).and_return(%w[1 4 7])
       end
       it "should return true" do
-        expect(game_controller.player_win?).to be true
+        expect(game_controller).to be_player_win
       end
     end
 
@@ -32,7 +32,7 @@ describe GameController do
         allow(game_controller).to receive(:current_player_cells).and_return(%w[1 5 9])
       end
       it "should return true" do
-        expect(game_controller.player_win?).to be true
+        expect(game_controller).to be_player_win
       end
     end
 
@@ -41,7 +41,7 @@ describe GameController do
         allow(game_controller).to receive(:current_player_cells).and_return(%w[1 3])
       end
       it "should return false" do
-        expect(game_controller.player_win?).to be false
+        expect(game_controller).not_to be_player_win
       end
     end
   end
