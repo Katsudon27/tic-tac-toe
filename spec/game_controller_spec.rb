@@ -74,4 +74,22 @@ describe GameController do
       end
     end
   end
+
+  describe "#return_player_input" do
+    it "sends make_move" do
+      expect(game_controller.instance_variable_get(:@current_player)).to receive(:make_move)
+      game_controller.return_player_input
+    end
+  end
+
+  describe "#place_piece" do
+    context "when the current player places his piece in cell 1" do
+      it "sends place_piece" do
+        player_move = "1"
+        expect(game_board).to receive(:place_piece).with(player_move,
+                                                         game_controller.instance_variable_get(:@current_player))
+        game_controller.place_piece(player_move)
+      end
+    end
+  end
 end
