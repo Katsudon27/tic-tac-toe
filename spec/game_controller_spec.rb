@@ -49,7 +49,7 @@ describe GameController do
   describe "#switch_turn" do
     it "should switch to the other player as the current player" do
       game_controller.switch_turn
-      expect(game_controller.current_player).to eq(player2)
+      expect(game_controller.instance_variable_get(:@current_player)).to eq(player2)
     end
   end
 

@@ -3,8 +3,6 @@ require_relative "player"
 
 # Controls the flow of the Tic Tac Toe game
 class GameController
-  attr_reader :current_player
-
   def initialize(player1, player2, game_board)
     @player1 = player1
     @player2 = player2
