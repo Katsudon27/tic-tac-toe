@@ -15,7 +15,7 @@ class GameController
   end
 
   def player_win?
-    player_moves = current_player_cells
+    player_moves = @game_board.return_player_cells(@current_player)
 
     if (player_moves.length >= 3) && (check_condition?("row", player_moves) ||
       check_condition?("column", player_moves) ||
@@ -55,9 +55,5 @@ class GameController
     end
 
     false
-  end
-
-  def current_player_cells
-    @game_board.return_player_cells(@current_player)
   end
 end

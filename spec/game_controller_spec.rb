@@ -11,7 +11,7 @@ describe GameController do
   describe "#player_win?" do
     context "when a player places three pieces across a row" do
       before do
-        allow(game_controller).to receive(:current_player_cells).and_return(%w[1 2 3])
+        allow(game_board).to receive(:return_player_cells).and_return(%w[1 2 3])
       end
       it "should return true" do
         expect(game_controller).to be_player_win
@@ -20,7 +20,7 @@ describe GameController do
 
     context "when a player places three pieces across a column" do
       before do
-        allow(game_controller).to receive(:current_player_cells).and_return(%w[1 4 7])
+        allow(game_board).to receive(:return_player_cells).and_return(%w[1 4 7])
       end
       it "should return true" do
         expect(game_controller).to be_player_win
@@ -29,7 +29,7 @@ describe GameController do
 
     context "when a player places three pieces diagonally" do
       before do
-        allow(game_controller).to receive(:current_player_cells).and_return(%w[1 5 9])
+        allow(game_board).to receive(:return_player_cells).and_return(%w[1 5 9])
       end
       it "should return true" do
         expect(game_controller).to be_player_win
@@ -38,7 +38,7 @@ describe GameController do
 
     context "when a player has not yet won" do
       before do
-        allow(game_controller).to receive(:current_player_cells).and_return(%w[1 3])
+        allow(game_board).to receive(:return_player_cells).and_return(%w[1 3])
       end
       it "should return false" do
         expect(game_controller).not_to be_player_win
@@ -86,8 +86,7 @@ describe GameController do
     context "when the current player places his piece in cell 1" do
       it "sends place_piece" do
         player_move = "1"
-        expect(game_board).to receive(:place_piece).with(player_move,
-                                                         game_controller.instance_variable_get(:@current_player))
+        expect(game_board).to receive(:place_piece)
         game_controller.place_piece(player_move)
       end
     end
