@@ -3,10 +3,10 @@ require_relative "../lib/cell"
 
 describe GameBoard do
   subject(:game_board) { described_class.new }
-  let(:cell2) { game_board.instance_variable_get(:@board)[0][1] }
+  let(:player1) { double(Player) }
+  let(:board) { game_board.instance_variable_get(:@board) }
+  let(:cell2) { board[0][1] }
   describe "#place_piece" do
-    let(:player1) { double(Player) }
-
     context "when a player places a piece on cell 2" do
       before do
         allow(cell2).to receive(:add_piece)
@@ -20,8 +20,6 @@ describe GameBoard do
   end
 
   describe "#return_empty_cells" do
-    let(:board) { game_board.instance_variable_get(:@board) }
-
     before do
       board.each do |row|
         row.each { |cell| allow(cell).to receive(:is_occupied).and_return("X") }
@@ -40,6 +38,31 @@ describe GameBoard do
       end
       it "should return an array with the values of the empty cells" do
         expect(game_board.return_empty_cells).to eq(["2"])
+      end
+    end
+  end
+
+  describe "#return_player_cells" do
+    before do
+      board.each do |row|
+        row.each { |cell| allow(cell).to receive(:is_occupied).and_return(false) }
+      end
+
+      allow(player1).to receive(:symbol).and_return("X")
+    end
+
+    context "when a player has not placed any piece" do
+      it "should return an empty array" do
+        expect(game_board.return_player_cells(player1)).to eq([])
+      end
+    end
+
+    context "when the player has placed a piece on cell 2" do
+      before do
+        allow(cell2).to receive(:is_occupied).and_return("X")
+      end
+      it "should return an array with the values of the player's cells" do
+        expect(game_board.return_player_cells(player1)).to eq(["2"])
       end
     end
   end
