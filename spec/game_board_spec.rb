@@ -3,9 +3,9 @@ require_relative "../lib/cell"
 
 describe GameBoard do
   subject(:game_board) { described_class.new }
+  let(:cell2) { game_board.instance_variable_get(:@board)[0][1] }
   describe "#place_piece" do
-    let(:player1) { instance_double(Player) }
-    let(:cell2) { game_board.instance_variable_get(:@board)[0][1] }
+    let(:player1) { double(Player) }
 
     context "when a player places a piece on cell 2" do
       before do
@@ -15,6 +15,31 @@ describe GameBoard do
       it "should send add_piece to the corresponding cell" do
         expect(cell2).to receive(:add_piece).once
         game_board.place_piece("2", player1)
+      end
+    end
+  end
+
+  describe "#return_empty_cells" do
+    let(:board) { game_board.instance_variable_get(:@board) }
+
+    before do
+      board.each do |row|
+        row.each { |cell| allow(cell).to receive(:is_occupied).and_return("X") }
+      end
+    end
+
+    context "when there are no empty cells left" do
+      it "should return an empty array" do
+        expect(game_board.return_empty_cells).to eq([])
+      end
+    end
+
+    context "when there are empty cells left" do
+      before do
+        allow(cell2).to receive(:is_occupied).and_return(false)
+      end
+      it "should return an array with the values of the empty cells" do
+        expect(game_board.return_empty_cells).to eq(["2"])
       end
     end
   end
